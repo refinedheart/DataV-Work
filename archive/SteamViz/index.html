@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SteamInsight: 游戏市场可视化</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+
+    <header>
+        <h1>Steam<span class="highlight">Insight</span> 2025</h1>
+        <p>基于 D3.js 的全球游戏市场交互分析大屏</p>
+    </header>
+
+    <div class="dashboard-container">
+        
+        <div class="card" id="scatter-container">
+            <div class="card-header">
+                <h2>🎮 价格 vs 好评率 (The Nebula)</h2>
+                <div class="controls">
+                    <span id="game-count">Loading...</span>
+                </div>
+            </div>
+            <div id="chart-scatter"></div>
+        </div>
+
+        <div class="sidebar">
+            <div class="card" id="trend-container">
+                <div class="card-header">
+                    <h2>📈 类型进化史 (Trends)</h2>
+                </div>
+                <div id="chart-trend"></div>
+            </div>
+
+            <div class="card" id="detail-container">
+                <div class="card-header">
+                    <h2>🏷️ 热门标签 (Tags)</h2>
+                </div>
+                <div id="chart-detail"></div>
+            </div>
+        </div>
+    </div>
+    <div id="tooltip"></div>
+    <script src="main.js"></script>
+</body>
+</html>
