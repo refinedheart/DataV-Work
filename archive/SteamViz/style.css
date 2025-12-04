@@ -1,3 +1,5 @@
+/* style.css - V5.1 Final Fix */
+
 /* 引入高级无衬线字体 */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
 
@@ -12,17 +14,21 @@
     --grid-line: rgba(148, 163, 184, 0.1); /* 极淡网格 */
 }
 
-body {
+/* 1. 全局布局修正：彻底松绑，允许滚动 */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: auto; 
+    min-height: 100vh; /* 至少占满一屏 */
+    overflow-y: scroll !important; /* 强制开启垂直滚动条 */
     background: radial-gradient(circle at top left, #1e293b, #0f172a 80%);
     color: var(--text-main);
     font-family: 'Inter', sans-serif;
-    margin: 0;
-    height: 100vh;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
+    padding-bottom: 60px; /* 底部留白给 Footer */
 }
 
+/* 2. 标题栏 */
 header {
     padding: 0 40px;
     height: 80px;
@@ -39,54 +45,45 @@ h1 {
     background: linear-gradient(90deg, #fff, #94a3b8);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    animation: glitch 3s infinite;
 }
 
+/* 3. 主容器：强制固定高度，确保能容纳所有内容 */
 .dashboard-container {
     display: grid;
     grid-template-columns: 3fr 1fr;
     gap: 20px;
     padding: 20px 40px;
-    height: calc(100vh - 80px);
+    
+    /* 🚨 核心修正：给足 1100px 高度，逼出滚动条，防止图表被切 */
+    height: 1100px; 
+    
+    box-sizing: border-box;
 }
 
-/* --- style.css 修复版 --- */
-
-/* 1. 强制 Sidebar 严格均分，不允许被撑大 */
+/* 4. 侧边栏与卡片：跟随父容器高度 */
 .sidebar {
     display: grid;
     grid-template-rows: 1fr 1fr; 
     gap: 20px;
-    height: 100%;
-    min-height: 0; /* 关键：允许 grid item 压缩 */
+    height: 100%; 
+    min-height: 0; 
     overflow: hidden;
 }
 
-/* 2. 卡片容器锁死 */
 .card {
     background: var(--bg-panel);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 16px;
-    padding: 20px; /* 稍微减小 padding */
+    padding: 20px;
     display: flex;
     flex-direction: column;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    
-    /* 🚨 核心修复：防止无限生长 */
     height: 100%; 
     min-height: 0; 
-    overflow: hidden; 
-}
-
-/* 3. 图表容器 */
-#chart-scatter, #chart-trend, #chart-detail {
-    flex-grow: 1;
-    width: 100%;
-    height: 100%;
-    min-height: 0; /* 关键 */
-    position: relative; /* 方便内部绝对定位 */
-    overflow: hidden; /* 砍掉溢出的部分 */
+    overflow: hidden; /* 防止无限生长 Bug */
 }
 
 .card-header {
@@ -94,7 +91,7 @@ h1 {
     justify-content: space-between;
     align-items: flex-end;
     margin-bottom: 20px;
-    border-bottom: none; /* 去掉以前的下划线 */
+    border-bottom: none;
 }
 
 h2 {
@@ -112,10 +109,14 @@ h2 {
     font-family: monospace;
 }
 
-/* 图表区域 */
+/* 图表容器 */
 #chart-scatter, #chart-trend, #chart-detail {
     flex-grow: 1;
     width: 100%;
+    height: 100%;
+    min-height: 0;
+    position: relative;
+    overflow: hidden;
 }
 
 /* 坐标轴美化 */
@@ -128,7 +129,7 @@ h2 {
     stroke: var(--grid-line);
 }
 
-/* Tooltip 高级感设计 */
+/* Tooltip */
 #tooltip {
     position: absolute;
     opacity: 0;
@@ -143,34 +144,93 @@ h2 {
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
     transition: all 0.15s ease-out;
     min-width: 180px;
+    z-index: 2000; /* 确保在最上层 */
 }
-
-#tooltip h3 {
-    margin: 0 0 8px 0;
-    font-size: 15px;
-    font-weight: 600;
-    color: #fff;
-}
+#tooltip h3 { margin: 0 0 8px 0; font-size: 15px; font-weight: 600; color: #fff; }
 #tooltip p { margin: 4px 0; color: #cbd5e1; }
 
-/* Brushing 样式美化 */
+/* Brushing & Button */
 .selection {
-    fill: rgba(6, 182, 212, 0.15); /* 内部淡青色填充 */
-    stroke: #06b6d4; /* 亮青色边框 */
+    fill: rgba(6, 182, 212, 0.15);
+    stroke: #06b6d4;
     stroke-width: 1px;
-    stroke-dasharray: 4, 4; /* 虚线边框 */
-    animation: dash 1s linear infinite; /* 边框流动动画 */
+    stroke-dasharray: 4, 4;
+    animation: dash 1s linear infinite;
+}
+@keyframes dash { to { stroke-dashoffset: -8; } }
+.handle { fill: #06b6d4; width: 6px; height: 6px; }
+
+#reset-btn {
+    background: transparent;
+    border: 1px solid var(--accent-cyan);
+    color: var(--accent-cyan);
+    padding: 4px 12px;
+    font-family: 'Inter', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    margin-right: 15px;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    border-radius: 2px;
+}
+#reset-btn:hover { background: var(--accent-cyan); color: #000; box-shadow: 0 0 10px var(--accent-cyan); }
+#reset-btn:active { transform: scale(0.95); }
+
+/* Footer */
+footer {
+    position: fixed; 
+    bottom: 0; 
+    width: 100%; 
+    text-align: center; 
+    font-size: 10px; 
+    color: #475569; 
+    pointer-events: none;
+    background: rgba(15, 23, 42, 0.8); 
+    backdrop-filter: blur(5px);
+    padding: 5px 0;
+    z-index: 1000;
 }
 
-@keyframes dash {
-    to {
-        stroke-dashoffset: -8;
-    }
+/* --- 氛围特效 --- */
+/* Glitch 动画 */
+@keyframes glitch {
+    0% { text-shadow: 2px 0 rgba(236, 72, 153, 0.5), -2px 0 rgba(6, 182, 212, 0.5); }
+    90% { text-shadow: 2px 0 rgba(236, 72, 153, 0.5), -2px 0 rgba(6, 182, 212, 0.5); }
+    91% { text-shadow: -2px 0 rgba(236, 72, 153, 0.5), 2px 0 rgba(6, 182, 212, 0.5); }
+    92% { text-shadow: none; }
+    100% { text-shadow: none; }
 }
 
-/* 刷取时的非选中区域变暗 */
-.handle {
-    fill: #06b6d4;
-    width: 6px;
-    height: 6px;
+/* CRT 扫描线 */
+body::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%; /* 覆盖整个滚动区域 */
+    height: 100%;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.15),
+        rgba(0, 0, 0, 0.15) 1px,
+        transparent 1px,
+        transparent 2px
+    );
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0.7;
+}
+
+/* 暗角 Vignette */
+body::before {
+    content: "";
+    position: fixed; /* 固定在窗口 */
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(circle, rgba(6, 182, 212, 0.02) 0%, rgba(0, 0, 0, 0.4) 100%);
+    pointer-events: none;
+    z-index: 998;
 }
