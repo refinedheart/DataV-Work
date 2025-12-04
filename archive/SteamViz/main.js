@@ -1,4 +1,4 @@
-// main.js - V5.1 Final Fix (Layout & Margin Adjusted)
+// main.js - V5.2 Final Fix (Interactive & Layout)
 let globalData = [];
 
 // 🚨 核心修正：增大底部 margin (40 -> 70)，防止 X 轴文字被切掉
@@ -26,7 +26,30 @@ async function init() {
     drawTrendChart(data);
     drawTagChart(data);
 
-    // 4. Resize
+    // 4. 键盘监听：Shift 键切换穿透模式
+    window.addEventListener("keydown", function(event) {
+        if (event.key === "Shift") {
+            const checkbox = document.getElementById("inspect-mode");
+            if (checkbox) checkbox.checked = true;
+
+            // 开启穿透：应用 CSS 规则禁用 pointer-events
+            d3.select(".brush").classed("brush-disabled", true);
+            d3.select("body").classed("is-inspecting", true);
+        }
+    });
+
+    window.addEventListener("keyup", function(event) {
+        if (event.key === "Shift") {
+            const checkbox = document.getElementById("inspect-mode");
+            if (checkbox) checkbox.checked = false;
+
+            // 关闭穿透
+            d3.select(".brush").classed("brush-disabled", false);
+            d3.select("body").classed("is-inspecting", false);
+        }
+    });
+
+    // 5. Resize
     window.addEventListener("resize", () => {
         drawScatterPlot(globalData);
         drawTrendChart(globalData);
@@ -239,6 +262,11 @@ function resetBrush() {
     d3.select("#scatter-circles").selectAll("circle").transition().duration(500).attr("opacity", 0.7).style("fill", d => getColor(d.genres));
     drawTrendChart(globalData); drawTagChart(globalData);
     d3.select("#game-count").text(`SYSTEM READY`);
+}
+
+function toggleInspect(checkbox) {
+    d3.select(".brush").classed("brush-disabled", checkbox.checked);
+    d3.select("body").classed("is-inspecting", checkbox.checked);
 }
 
 init();

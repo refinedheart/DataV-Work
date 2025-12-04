@@ -1,4 +1,4 @@
-/* style.css - V5.1 Final Fix */
+/* style.css - V5.2 Final Fix (Scroll & Interaction) */
 
 /* 引入高级无衬线字体 */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
@@ -129,6 +129,10 @@ h2 {
     stroke: var(--grid-line);
 }
 
+.brush {
+    z-index: 100;
+}
+
 /* Tooltip */
 #tooltip {
     position: absolute;
@@ -233,4 +237,21 @@ body::before {
     background: radial-gradient(circle, rgba(6, 182, 212, 0.02) 0%, rgba(0, 0, 0, 0.4) 100%);
     pointer-events: none;
     z-index: 998;
+}
+
+/* --- 交互冲突修复 V2.0 --- */
+/* 核心修复：强制禁用 brush 组及其所有子元素(rect)的鼠标响应 */
+.brush-disabled, 
+.brush-disabled * {
+    pointer-events: none !important;
+}
+
+/* 开启穿透模式时的光标 */
+body.is-inspecting {
+    cursor: default !important;
+}
+
+/* 此时圆点变为十字光标 */
+body.is-inspecting #scatter-circles circle {
+    cursor: crosshair;
 }
